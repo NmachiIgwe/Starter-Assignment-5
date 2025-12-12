@@ -259,7 +259,7 @@ function App() {
   };
 
   if (loading) {
-    return <div className="App">Loading...</div>;
+    return <div className="App"><div className="loading">Loading...</div></div>;
   }
 
   return (
@@ -268,44 +268,51 @@ function App() {
         <h1>Boggle Game</h1>
         
         {/* Authentication Section */}
-        <div style={{ marginBottom: '20px' }}>
+        <div className="auth-section">
           {user ? (
             <div>
-              <p>Welcome, {user.displayName || user.email}!</p>
-              <button onClick={handleSignOut} style={{ padding: '5px 10px', margin: '5px' }}>
+              <p>👤 Welcome, <strong>{user.displayName || user.email}</strong>!</p>
+              <button onClick={handleSignOut} style={{ padding: '8px 16px', margin: '5px' }}>
                 Sign Out
               </button>
             </div>
           ) : (
-            <button onClick={handleSignIn} style={{ padding: '5px 10px', margin: '5px' }}>
-              Sign in with Google
-            </button>
+            <div>
+              <p>Sign in to track your scores and compete on the leaderboard!</p>
+              <button onClick={handleSignIn} style={{ padding: '10px 20px', margin: '5px' }}>
+                🔐 Sign in with Google
+              </button>
+            </div>
           )}
         </div>
 
         {gameState === GAME_STATE.BEFORE && (
           <div>
             <h2>Select Game Mode:</h2>
-            <button 
-              onClick={() => setShowChallengeList(true)} 
-              style={{ margin: '10px', padding: '10px 20px' }}
-            >
-              Load Challenge
-            </button>
-            <button 
-              onClick={handleStartGame} 
-              style={{ margin: '10px', padding: '10px 20px' }}
-            >
-              Random Game
-            </button>
+            <div className="game-mode-selection">
+              <button 
+                className="mode-button"
+                onClick={() => setShowChallengeList(true)} 
+              >
+                🎯 Load Challenge
+              </button>
+              <button 
+                className="mode-button"
+                onClick={handleStartGame} 
+              >
+                🎲 Random Game
+              </button>
+            </div>
 
             {!showChallengeList && (
               <div>
                 <h3>Select Board Size:</h3>
-                <button onClick={() => handleSizeChange(3)}>3x3</button>
-                <button onClick={() => handleSizeChange(4)}>4x4</button>
-                <button onClick={() => handleSizeChange(5)}>5x5</button>
-                <button onClick={() => handleSizeChange(6)}>6x6</button>
+                <div className="size-selection">
+                  <button className="size-button" onClick={() => handleSizeChange(3)}>3x3</button>
+                  <button className="size-button" onClick={() => handleSizeChange(4)}>4x4</button>
+                  <button className="size-button" onClick={() => handleSizeChange(5)}>5x5</button>
+                  <button className="size-button" onClick={() => handleSizeChange(6)}>6x6</button>
+                </div>
               </div>
             )}
 
@@ -316,27 +323,21 @@ function App() {
                   onClick={() => setShowChallengeList(false)}
                   style={{ marginBottom: '10px', padding: '5px 10px' }}
                 >
-                  Back
+                  ← Back
                 </button>
-                <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
+                <div className="challenge-list">
                   {challenges.length === 0 ? (
                     <p>No challenges available. Please populate challenges first.</p>
                   ) : (
                     challenges.map((challenge) => (
                       <div 
                         key={challenge.id} 
-                        style={{ 
-                          border: '1px solid #ddd', 
-                          padding: '10px', 
-                          margin: '10px 0',
-                          cursor: 'pointer',
-                          backgroundColor: selectedChallenge?.id === challenge.id ? '#e0e0e0' : 'white'
-                        }}
+                        className={`challenge-item ${selectedChallenge?.id === challenge.id ? 'selected' : ''}`}
                         onClick={() => handleLoadChallenge(challenge.id)}
                       >
                         <h4>{challenge.name}</h4>
                         <p>{challenge.description || `Size: ${challenge.size}x${challenge.size}`}</p>
-                        <p><strong>High Score: {challenge.highScore || 0}</strong></p>
+                        <p><strong>🏆 High Score: {challenge.highScore || 0}</strong></p>
                       </div>
                     ))
                   )}
@@ -353,8 +354,9 @@ function App() {
             </h2>
             {isChallengeMode && (
               <div>
-                <h3>Score: {score}</h3>
-                <p>Words Found: {foundSolutions.length}</p>
+                <div className="score-display">
+                  🎯 Score: {score} | Words: {foundSolutions.length}
+                </div>
               </div>
             )}
             {grid.length > 0 && (
@@ -397,8 +399,9 @@ function App() {
             <h2>Game Ended</h2>
             {isChallengeMode && (
               <div>
-                <h3>Final Score: {score}</h3>
-                <p>Words Found: {foundSolutions.length}</p>
+                <div className="score-display">
+                  🏆 Final Score: {score} | Words Found: {foundSolutions.length}
+                </div>
               </div>
             )}
             {grid.length > 0 && (
@@ -432,9 +435,9 @@ function App() {
             {allSolutions.length > 0 && !isChallengeMode && (
               <div style={{ marginTop: '20px' }}>
                 <h3>All Solutions ({allSolutions.length}):</h3>
-                <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
+                <div className="words-container">
                   {allSolutions.map((word, index) => (
-                    <span key={index} style={{ margin: '5px', display: 'inline-block' }}>
+                    <span key={index} className="word-tag">
                       {word}
                     </span>
                   ))}
@@ -444,9 +447,9 @@ function App() {
             {foundSolutions.length > 0 && isChallengeMode && (
               <div style={{ marginTop: '20px' }}>
                 <h3>Your Words ({foundSolutions.length}):</h3>
-                <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
+                <div className="words-container">
                   {foundSolutions.map((word, index) => (
-                    <span key={index} style={{ margin: '5px', display: 'inline-block' }}>
+                    <span key={index} className="word-tag">
                       {word}
                     </span>
                   ))}
@@ -457,27 +460,25 @@ function App() {
             {/* Leaderboard for Challenge Mode */}
             {isChallengeMode && selectedChallenge && leaderboard.length > 0 && (
               <div style={{ marginTop: '20px' }}>
-                <h3>Leaderboard for {selectedChallenge.name}</h3>
-                <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <h3>🏆 Leaderboard for {selectedChallenge.name}</h3>
+                <div className="leaderboard">
+                  <table>
                     <thead>
                       <tr>
-                        <th style={{ border: '1px solid #ccc', padding: '5px' }}>Rank</th>
-                        <th style={{ border: '1px solid #ccc', padding: '5px' }}>Player</th>
-                        <th style={{ border: '1px solid #ccc', padding: '5px' }}>Score</th>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
                       </tr>
                     </thead>
                     <tbody>
                       {leaderboard.map((entry, index) => (
                         <tr 
                           key={entry.id}
-                          style={{ 
-                            backgroundColor: user && entry.userId === user.uid ? '#ffffcc' : 'white'
-                          }}
+                          className={user && entry.userId === user.uid ? 'user-row' : ''}
                         >
-                          <td style={{ border: '1px solid #ccc', padding: '5px' }}>{index + 1}</td>
-                          <td style={{ border: '1px solid #ccc', padding: '5px' }}>{entry.userName}</td>
-                          <td style={{ border: '1px solid #ccc', padding: '5px' }}>{entry.score}</td>
+                          <td>#{index + 1}</td>
+                          <td>{entry.userName}</td>
+                          <td>{entry.score}</td>
                         </tr>
                       ))}
                     </tbody>
